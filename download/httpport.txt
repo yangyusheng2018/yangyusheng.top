@@ -1,0 +1,57 @@
+<?php
+class httpport {
+    public function nldns($domain){
+        $fp = @fsockopen( "whois.sidn.nl", 43, $errno, $errstr, 20) or die("Socket Error " . $errno . " - " . $errstr);
+        fputs($fp, $domain . "\r\n");
+        $out = "";
+        while(!feof($fp)){
+            $out .= fgets($fp);
+        }
+        fclose($fp);
+        $data=explode("\r\n",$out);
+        if(isset($data[1])){
+            $status=str_replace(" ","",$data[1]);
+        }
+        if(strpos($data[0],'is free')){
+            $res=1;
+        }elseif ($status=="Status:active"){
+            $res=-1;
+        }elseif ($status=="Status:inquarantine"){
+            $res=0;
+        }
+       echo $res;
+    }
+    public function dnsbe($domain){
+        //加载bewhois 服务器
+        $fp = @fsockopen("whois.dns.be", 43, $errno, $errstr, 20) or die("Socket Error " . $errno . " - " . $errstr);
+        //添加域名
+        fputs($fp, $domain. "\r\n");
+        $out = "";
+        while(!feof($fp)){
+            $out .= fgets($fp);
+        }
+        fclose($fp);
+        //将输出文档转化成数组
+        $data=explode("\r\n",$out);
+        //获取年份
+        $years=explode(" ",trim($data[38]));
+        //判断域名是否 可注册  判断域名是否被抢注
+        if(trim($data[37])=="Status:	NOT AVAILABLE"&& $years[3]!=date("Y")){
+            $res=0;
+        }elseif (trim($data[37])=="Status:	NOT AVAILABLE"&& $years[3]==date("Y")){
+            $res=-1;
+        }elseif (trim($data[37])=="Status:	AVAILABLE"){
+            $res=1;
+        }
+       echo $res;
+    }
+
+}
+
+$model=new httpport();
+if($_GET["action"]=="nldns"){
+    $model->nldns($_GET["domain"]);
+}elseif ($_GET["action"]=="dnsbe"){
+    $model->dnsbe($_GET["domain"]);
+}
+
