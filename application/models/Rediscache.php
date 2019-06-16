@@ -42,14 +42,22 @@ class RediscacheModel {
             }
         }
         foreach ($senddomains as $domain){
-                $redismodel->rPush("send_domains",$domain);
-                fwrite($sendfile,$domain."\n");
+            $redismodel->rPush("send_domains",$domain);
+            fwrite($sendfile,$domain."\n");
         }
 
         fclose($nlfile);
         fclose($befile);
         fclose($frfile);
         fclose($sendfile);
+        $fen=date("i",time());
+        if($fen>15&&$fen<43){
+            $befile=fopen($_SERVER['DOCUMENT_ROOT']."/download/be.txt","w");
+            fwrite($befile,"");
+            fclose($befile);
+        }
+
+
         foreach ($nlapikeys as $nlapikey){
             $redismodel->rPush("nlapikeys",$nlapikey[0].":".$nlapikey[1]);
         }

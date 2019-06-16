@@ -1,0 +1,5 @@
+<?php
+$domain=$_GET["domain"];
+    $url="http://web.archive.org/__wb/sparkline?url=http%3A%2F%2F".trim($domain)."&collection=web&output=json";
+$data=file_get_contents($url);
+  echo trim($domain)."----".$data."\n";

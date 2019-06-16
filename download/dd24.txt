@@ -1,0 +1,20 @@
+<?php
+$domainstr=$_GET["domains"];
+$domins=explode(",",$domainstr);
+$url="https://www.domaindiscount24.com/de/script/domain-ajax-response?do=domainstatus&debug=1&check_single_domain=0&";
+foreach ($domins as $j){
+    $url.="domains[]=".$j."&";
+}
+$out=file_get_contents($url."&type=typeBulk&");
+$data=json_decode($out,true);
+//var_dump($data);
+
+$avdomain=[];
+foreach ($data["domains"] as $k=>$v){
+    if($v["status"]["status"]=="domain_available"){
+        $avdomain[$k]=1;
+    }else{
+        $avdomain[$k]=0;
+    }
+}
+echo json_encode($avdomain,JSON_UNESCAPED_UNICODE);

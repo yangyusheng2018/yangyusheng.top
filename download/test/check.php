@@ -479,144 +479,144 @@ class RegistnewModel {
         return $pdo;
 
     }
-        public function tosendemail($domain){
+    public function tosendemail($domain){
 
-        }
+    }
 
 
-        public function tosend2($domain){
-            echo "加载toIsSend2";
-            $pdo = $this->getpdo();
-            $pdo->query('set names utf8');
-            $query = $pdo->prepare("update domains set is_send = 9 where domain=? AND is_send = 0");
-            $res = $query->execute([$domain]);
-            $pdo = null;
-            var_dump($res);
-            $logstr = "";
-            $payLogFile = 'logtxt.txt';
-            $nowdate = date("Y-m-d H:i:s", time());
-            $logstr = $nowdate . "\n" . $domain . "已被抢注\n";
-            file_put_contents($payLogFile, $logstr . PHP_EOL, FILE_APPEND);
-        }
+    public function tosend2($domain){
+        echo "加载toIsSend2";
+        $pdo = $this->getpdo();
+        $pdo->query('set names utf8');
+        $query = $pdo->prepare("update domains set is_send = 9 where domain=? AND is_send = 0");
+        $res = $query->execute([$domain]);
+        $pdo = null;
+        var_dump($res);
+        echo "已被抢注\n";
+    }
 
     public function __destruct()
     {
         // TODO: Implement __destruct() method.
         $pdo=null;
     }
-
-    public function nlapi1regist($domain,$apikey,$password,$holderid){
-
+    public function nlapi2regist($domain,$token,$extent_id,$holder_id){
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, 'http://www.yangyusheng.top/download/api1.php');
+//设置抓取的url
+
+        curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+        $header=[
+            "Accept:application/json",
+            "Authorization: Bearer ".$token,
+            "Content-Type: application/x-www-form-urlencoded"
+        ];
+        curl_setopt($curl, CURLOPT_URL, 'https://api.neostrada.com/api/orders/add/');
+//设置头文件的信息作为数据流输出
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_POST, 1);
-        $post_data =[
-            'domain'=>$domain,
-            'apikey'=>$apikey,
-            'password'=>$password,
-            'holderid'=>$holderid,
-        ];
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        $data = curl_exec($curl);
-        curl_close($curl);
-
-        return json_decode($data,true);
-    }
-    public function nlapi2regist($domain,$token,$extent_id){
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, 'http://www.yangyusheng.top/download/api2.php');
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_POST, 1);
-        $post_data =[
-            'domain'=>$domain,
-            'token'=>$token,
-            'extent_id'=>$extent_id,
-        ];
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        $data = curl_exec($curl);
-        curl_close($curl);
-
-        return json_decode($data,true);
-    }
-    public function userregist($domain){
-        $nowtime=time();
-        $pdo=$this->getpdo();
-        $pdo->query('set names utf8');
-        $query=$pdo->prepare("select *  from domains where start_time<? and end_time>? and is_send=0 AND Domain=?");
-        $query->execute([$nowtime,$nowtime,$domain]);
-        $ress=$query->fetchAll();
-        $pdo=null;
-        var_dump($ress);
-        $users=$ress[array_rand($ress,1)];
-        var_dump($users);
-        $res2=$this->nlapi1regist($domain,$users["apikey1"],$users["password"],$users["holderid"]);
-        var_dump($res2);
-        if($res2==null){
-            $curl = curl_init();
-            curl_setopt($curl, CURLOPT_URL, 'http://www.yangyusheng.top/download/createiptxt.php');
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($curl, CURLOPT_POST, 0);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-            curl_exec($curl);
-            curl_close($curl);
-        }else{
-            $code2=$res2["code"];
-            if($code2==200) {
-                $pdo=$this->getpdo();
-                $pdo->query('set names utf8');
-                $query=$pdo->prepare("update domains set is_send = 7 where domain=? AND is_send = 0");
-                $res=$query->execute([$domain]);
-                $pdo=null;
-                var_dump($res);
-                $logstr="";
-                $payLogFile = 'logtxt.txt';
-                $nowdate=date("Y-m-d H:i:s",time());
-                $logstr=$nowdate."\n".$domain."api1已修改\n";
-                file_put_contents($payLogFile, $logstr.PHP_EOL, FILE_APPEND);
-                ob_flush();flush();
-            }else{
-                $messages="域名购买失败";
-                $logstr="";
-                $payLogFile ='api1shibai.txt';
-                $nowdate=date("Y-m-d H:i:s",time());
-                $logstr=$nowdate."\n".$domain."api1购买失败\n";
-                file_put_contents($payLogFile, $logstr.PHP_EOL, FILE_APPEND);
-                
-
-
-                $res1=$this->nlapi2regist($domain,$users["apikey"],$users["extent_id"]);
-                var_dump($res1);
-                $code1=$res1["code"];
-                if($code1==200) {
-                    $pdo=$this->getpdo();
-                    $pdo->query('set names utf8');
-                    $query=$pdo->prepare("update domains set is_send = 6 where domain=? AND is_send = 0");
-                    $res=$query->execute([$domain]);
-                    $pdo=null;
-                    var_dump($res);
-                    $logstr="";
-                    $payLogFile = 'logtxt.txt';
-                    $nowdate=date("Y-m-d H:i:s",time());
-                    $logstr=$nowdate."\n".$domain."已修改\n";
-                    file_put_contents($payLogFile, $logstr.PHP_EOL, FILE_APPEND);
-                    ob_flush();flush();
-                }elseif($code1==400){
-                    $messages="域名购买失败";
-                    $logstr="";
-                    $payLogFile ='api2shibai.txt';
-                    $nowdate=date("Y-m-d H:i:s",time());
-                    $logstr=$nowdate."\n".$domain."购买失败\n";
-                    file_put_contents($payLogFile, $logstr.PHP_EOL, FILE_APPEND);
-                    ob_flush();flush();
-                }
-            }
+        $ipdata=file("http://www.yangyusheng.top/download/ips.txt");
+        if(trim($ipdata[0])==""){
+            file_get_contents("http://yangyusheng.top/download/createiptxt.php");
         }
+        $post_data =[
+            'extension_id'=>$extent_id,
+            'domain'=> $domain,
+            'year'=>"1",
+            "holder_id"=>$holder_id,
+            "external_ip"=>trim($ipdata[0]),
+        ];
+        curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:20.0) Gecko/20100101 Firefox/20.0');
+//    var_dump($ipdata);
+//var_dump($ipdata);
+        curl_setopt($curl, CURLOPT_PROXYAUTH, CURLAUTH_BASIC); //代理认证模式
+        curl_setopt($curl, CURLOPT_PROXY, trim($ipdata[0])); //代理服务器地址
+        curl_setopt($curl, CURLOPT_PROXYPORT, trim($ipdata[1])); //代理服务器端口
+
+
+        curl_setopt($curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP); //使用http代理模式
+
+        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($post_data));
+
+//设置获取的信息以文件流的形式返回，而不是直接输出。
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+////执行命令
+        $data = curl_exec($curl);
+//关闭URL请求
+        var_dump($data);
+        curl_close($curl);
+        return json_decode($data,true);
+    }
+    public function sendchenggong2($domain){
+        $arrt=explode(".",$domain);
+        $content=file_get_contents("../".$arrt[1].".txt");
+        echo $content;
+        $content=str_replace($domain,"",$content);
+        file_put_contents("../".$arrt[1].".txt",$content);
+        $pdo=$this->getpdo();
+        $query=$pdo->prepare("update domains set is_send = 6 where domain=? AND is_send = 0");
+        $res=$query->execute([$domain]);
+        $pdo=null;
+        var_dump($res);
+        echo "api购买成功";
+    }
+    public function shibai($domain){
+//        $arrt=explode(".",$domain);
+//        $content=file_get_contents("../".$arrt[1].".txt");
+//        echo $content;
+//        $content=str_replace($domain,"",$content);
+//        file_put_contents("../".$arrt[1].".txt",$content);
+        $pdo=$this->getpdo();
+        $query=$pdo->prepare("update domains set is_send = is_send +1 where domain=?");
+        $res=$query->execute([$domain]);
+        $pdo=null;
+
+    }
+
+    public function userregist($domain){
+        $arrt=explode(".",$domain);
+        $domains1=$this->getdomain($arrt[1]);
+        if(!in_array($domain."\n", $domains1)){
+            echo "此域名不存在||";
+        }else{
+            $nowtime=time();
+            $pdo=$this->getpdo();
+            $pdo->query('set names utf8');
+            $query=$pdo->prepare("select *  from domains where start_time<? and end_time>? and is_send<3 AND Domain=?");
+            $query->execute([$nowtime,$nowtime,$domain]);
+            $ress=$query->fetchAll();
+            $pdo=null;
+            if($ress!=[]){
+                $result=0;
+                $users=$ress[array_rand($ress,1)];
+                var_dump($users["user_id"]);
+
+                $ips = file("http://yangyusheng.top/download/vpsip.txt");
+                $ip = $ips[mt_rand(0, count($ips))-1];
+                echo $ip;
+                $res1= file_get_contents("http://" . trim($ip) . "/registhttp.php?token=".$users["apikey"]."&domain=".$domain."&extent_id=".$users["extent_id"]."&holder_id=" .$users["holderid"]);
+
+//                $res1=$this->nlapi2regist($domain,$users["apikey"],$users["extent_id"],$users["holderid"]);
+                $res1=json_decode($res1,true);
+
+                var_dump($res1);
+                if($res1==null){
+                    echo "链接失败";
+//                    file_get_contents("http://yangyusheng.top/download/createiptxt.php");
+                }else{
+                    $code1=$res1["code"];
+                    if($code1==200) {
+                        $this->sendchenggong2($domain);
+                    }else{
+                        echo $messages="api2域名购买失败||";
+                        $this->shibai($domain);
+                    }
+                }
+
+            }else{echo "没有符合条件用户||";}
+        }
+
 
 
 
@@ -625,70 +625,96 @@ class RegistnewModel {
     public function getdomain($extend){
         $domains=[];
         $domains=file("http://yangyusheng.top/download/".$extend.".txt");
+
         $domains = array_unique($domains);
         return $domains;
     }
 
     public function registnl(){
-        $domains_nl=$this->getdomain("nl")();
+        $domains_nl=$this->getdomain("nl");
         if($domains_nl==[]){
             echo "没有可检测域名"."<br>";
             sleep(20);
-            ob_flush();
-            flush();
         }else{
             foreach ($domains_nl as $domain){
-                $nPID = pcntl_fork();
-                if ($nPID == 0) {
-                    $domain = trim($domain);
-                    sleep(0.5);
-                    $res=[];
-                    $res[$domain]=0;
-                    $ips = file("http://yangyusheng.top/download/vpsip.txt");
-                    $ip = $ips[mt_rand(1, count($ips))-1];
+                $domain = trim($domain);
+                $res=[];
+                $res[$domain]=0;
+                $ips = file("http://yangyusheng.top/download/vpsip.txt");
+                $ip = $ips[mt_rand(1, count($ips))-1];
+                echo $ip;
+                if(strlen($domain)>3){
                     $res[$domain] = file_get_contents("http://" . trim($ip) . "/checkaction.php?domain=" . $domain);
 //                    echo $res[$domain]."||";
-                    echo $domain."----". $res[$domain]."||";
+                    echo $domain."****". $res[$domain]."||";
                     if ($res[$domain] == 1) {
-//                        echo $domain."----". $res[$domain]."||";
+                        echo date("Y-m-d H:i:s",time()+3600*8).$domain."域名可注册";
+//                        echo $domain."****". $res[$domain]."||";
                         $this->userregist($domain);
-                    } elseif ($res[$domain] == -1) {
-                        $this->tosend2($domain);
                     }
-                    unset($res);
-                    exit(0);
+                }
+                unset($res);
+            }
+        }
+
+    }
+    public function dd24nl(){
+        $domains_nl=$this->getdomain("nl");
+        $domains_be=$this->getdomain("be");
+        $domains=array($domains_be,$domains_nl);
+        if($domains==[]){
+            echo "没有可检测域名"."<br>";
+            sleep(20);
+        }else{
+            $domainstr="";
+            foreach ($domains as $domain){
+                $domainstr=trim($domain).",";
+            }
+            $ips = file("http://yangyusheng.top/download/vpsip.txt");
+            $ip = $ips[mt_rand(0, count($ips))-1];
+            echo $ip;
+            $resjson= file_get_contents("http://" . trim($ip) . "/dd24.php?domain=" . $domainstr);
+            $res=json_decode($resjson,true);
+            foreach ($res as $k=>$v){
+                if ($v == 1) {
+                    echo date("Y-m-d H:i:s",time()+3600*8).$domain."域名可注册";
+                    $this->userregist($k);
                 }
             }
         }
 
     }
+
     public function registgnl(){
         $domains_nl=$this->getdomain("nl");
         if($domains_nl==[]){
             echo "没有可检测域名"."<br>";
             sleep(20);
-            ob_flush();
-            flush();
+
+
         }else{
             foreach ($domains_nl as $domain){
-                $nPID = pcntl_fork();
-                if ($nPID == 0) {
-                    $domain = trim($domain);
-                    sleep(0.5);
-                    $res=[];
-                    $res[$domain]=0;
-                    $ips = file("http://yangyusheng.top/download/vpsip.txt");
-                    $ip = $ips[mt_rand(1, count($ips))-1];
-                    $res[$domain] = file_get_contents("http://" . trim($ip) . "/godaddy.php?domain=" . $domain);
-                    echo $domain."----". $res[$domain]."||";
-                    if ($res[$domain] == 1) {
-                        $this->userregist($domain);
-                    } elseif ($res[$domain] == -1) {
-                       $this->tosend2($domain);
-                    }
-                    unset($res);
-                    exit(0);
+                if(trim($domain)!=""){
+//                    $nPID = pcntl_fork();
+//                    if ($nPID == 0) {
+                        $domain = trim($domain);
+                        sleep(2);
+                        $res=[];
+                        $res[$domain]=0;
+                        $ips = file("http://yangyusheng.top/download/vpsip.txt");
+                        $ip = $ips[mt_rand(1, count($ips))-1];
+                        $res[$domain] = file_get_contents("http://" . trim($ip) . "/godaddy.php?domain=" . $domain);
+                        echo $domain."****". $res[$domain]."||";
+                        if ($res[$domain] == 1) {
+                            $this->userregist($domain);
+                        }
+                        unset($res);
+//                        exit(0);
+//                    }
+                }else{
+                    echo "域名不能为空||";
                 }
+
             }
         }
 
@@ -698,30 +724,33 @@ class RegistnewModel {
         if($domains_be==[]){
             echo "没有可检测域名"."<br>";
             sleep(10);
-            ob_flush();
-            flush();
+
+
         }else {
             foreach ($domains_be as $domain) {
-                $nPID = pcntl_fork();
-                if ($nPID == 0) {
+                if(trim($domain)!=""){
                     $domain = trim($domain);
-                    sleep(0.9);
+                    sleep(1);
                     $res=[];
                     $res[$domain]=0;
                     $ips = file("http://yangyusheng.top/download/vpsip.txt");
                     $ip = $ips[mt_rand(1, count($ips))-1];
-                    $res[$domain] = file_get_contents("http://" . trim($ip) . "/checkaction.php?domain=" . $domain);
+                    echo $ip;
+                    if(strlen($domain)>3) {
+                        $res[$domain] = file_get_contents("http://" . trim($ip) . "/checkaction.php?domain=" . $domain);
 //                    echo $res[$domain]."||";
-                    echo $domain."----". $res[$domain]."||";
-                    if ($res[$domain] == 1) {
-//                        echo $domain."----". $res[$domain]."||";
-                        $this->userregist($domain);
-                    } elseif ($res[$domain] == -1) {
-                        $this->tosend2($domain);
+                        echo $domain . "****" . $res[$domain] . "||";
+                        if ($res[$domain] == 1) {
+                            echo date("Y-m-d H:i:s",time()+3600*8).$domain."域名可注册";
+//                        echo $domain."****". $res[$domain]."||";
+                            $this->userregist($domain);
+                        }
+                        unset($res);
                     }
-                    unset($res);
-                    exit(0);
+                }else{
+                    echo "域名不能为空||";
                 }
+
             }
         }
 
@@ -731,27 +760,28 @@ class RegistnewModel {
         if($domains_be==[]){
             echo "没有可检测域名"."<br>";
             sleep(10);
-            ob_flush();
-            flush();
+
         }else {
             foreach ($domains_be as $domain) {
-                $nPID = pcntl_fork();
-                if ($nPID == 0) {
-                    $domain = trim($domain);
-                    sleep(0.9);
-                    $res=[];
-                    $res[$domain]=0;
-                    $ips = file("http://yangyusheng.top/download/vpsip.txt");
-                    $ip = $ips[mt_rand(1, count($ips))-1];
-                    $res[$domain] = file_get_contents("http://" . trim($ip) . "/godaddy.php?domain=" . $domain);
-                    echo $domain."----". $res[$domain]."||";
-                    if ($res[$domain] == 1) {
-                        $this->userregist($domain);
-                    } elseif ($res[$domain] == -1) {
-                        $this->tosend2($domain);
-                    }
-                    unset($res);
-                    exit(0);
+                if(trim($domain)!="") {
+//                    $nPID = pcntl_fork();
+//                    if ($nPID == 0) {
+                        $domain = trim($domain);
+                        sleep(1);
+                        $res = [];
+                        $res[$domain] = 0;
+                        $ips = file("http://yangyusheng.top/download/vpsip.txt");
+                        $ip = $ips[mt_rand(1, count($ips)) - 1];
+                        $res[$domain] = file_get_contents("http://" . trim($ip) . "/godaddy.php?domain=" . $domain);
+                        echo $domain . "****" . $res[$domain] . "||";
+                        if ($res[$domain] == 1) {
+                            $this->userregist($domain);
+                        }
+                        unset($res);
+//                        exit(0);
+//                    }
+                }else{
+                    echo "域名不能为空||";
                 }
             }
         }
@@ -762,8 +792,8 @@ class RegistnewModel {
         if($domains_fr==[]){
             echo "没有可检测域名"."<br>";
             sleep(10);
-            ob_flush();
-            flush();
+
+
         }else {
             foreach ($domains_fr as $domain) {
                 $domain = trim($domain);
@@ -793,11 +823,7 @@ class RegistnewModel {
                 }
                 if ($res == 1) {
                     $this->userregist($domain);
-                } elseif ($res == -1) {
-                    $this->tosend2($domain);
                 }
-                ob_flush();
-                flush();
             }
         }
 
@@ -807,44 +833,44 @@ class RegistnewModel {
         if($domains==[]){
             echo "没有可检测域名"."<br>";
             sleep(10);
-            ob_flush();
-            flush();
+
+
         }else {
             foreach ($domains as $domain) {
-                    $domain = trim($domain);
-                    sleep(0.9);
-                    $res=[];
-                    $res[$domain]=0;
-                    $ips = file("http://yangyusheng.top/download/vpsip.txt");
-                    $ip = $ips[mt_rand(1, count($ips))-1];
-                    $res[$domain] = file_get_contents("http://" . trim($ip) . "/godaddy.php?domain=" . $domain);
-                    echo $domain."----". $res[$domain]."||";
-                    if ($res[$domain] == 1) {
-                        $content=$domain."可注册";
-                        $ress=[];
+                $domain = trim($domain);
+                sleep(0.9);
+                $res=[];
+                $res[$domain]=0;
+                $ips = file("http://yangyusheng.top/download/vpsip.txt");
+                $ip = $ips[mt_rand(1, count($ips))-1];
+                $res[$domain] = file_get_contents("http://" . trim($ip) . "/godaddy.php?domain=" . $domain);
+                echo $domain."****". $res[$domain]."||";
+                if ($res[$domain] == 1) {
+                    $content=$domain."可注册";
+                    $ress=[];
+                    $pdo=$this->getpdo();
+                    $pdo->query('set names utf8');
+                    $query=$pdo->prepare("select *  from domains where is_send=11 AND Domain=?");
+                    $query->execute([$domain]);
+                    $ress=$query->fetchAll();
+                    $pdo=null;
+                    if($ress!=[]&&isset($ress)){
+                        foreach ($ress as $res){
+                            file_get_contents("http://47.101.150.74/QQstmp.php?title=".$domain."&content=".$content."&to=".$res["email"]);
+                        }
                         $pdo=$this->getpdo();
                         $pdo->query('set names utf8');
-                        $query=$pdo->prepare("select *  from domains where is_send=11 AND Domain=?");
-                        $query->execute([$domain]);
-                        $ress=$query->fetchAll();
+                        $query=$pdo->prepare("update domains set is_send = 12 where domain=? AND is_send = 11");
+                        $res=$query->execute([$domain]);
                         $pdo=null;
-                        if($ress!=[]&&isset($ress)){
-                            foreach ($ress as $res){
-                                file_get_contents("http://47.101.150.74/QQstmp.php?title=".$domain."&content=".$content."&to=".$res["email"]);
-                            }
-                            $pdo=$this->getpdo();
-                            $pdo->query('set names utf8');
-                            $query=$pdo->prepare("update domains set is_send = 12 where domain=? AND is_send = 11");
-                            $res=$query->execute([$domain]);
-                            $pdo=null;
-                        }else{
-                            echo 1;
-                        }
-
-
-
+                    }else{
+                        echo 1;
                     }
-                    unset($res);
+
+
+
+                }
+                unset($res);
             }
         }
 

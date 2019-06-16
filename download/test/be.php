@@ -7,7 +7,7 @@ $fen=date("i",time());
     $registmodel=new RegistnewModel();
 //$registmodel->registnl();
     $registmodel->registbe();
-    sleep(2);
+    sleep(1);
 }else{
     sleep(20);
     echo "时间没到<br>";

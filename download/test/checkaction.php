@@ -80,6 +80,7 @@ class ApischeckModel {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);//绕过ssl验证
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        $output=curl_exec($ch);
         curl_close($ch);
         $res=0;
         $data=json_decode($output,true);
@@ -390,12 +391,21 @@ class ApischeckModel {
         }
         $data1=[];
         $data=explode("\n",$out);
-        for($i=0;$i<40;$i++){
-            $data[$i]=str_replace(["\n","\r"],"",$data[$i]);
-            if($data[$i]!=""&&substr_count($data[$i],"%")==0&&substr_count($data[$i],":")&&substr($data[$i], -1)!=":"&&substr_count($data[$i],"http")==0){
-                $data[$i]="\"".str_replace([": ",":	"],"\":\"",$data[$i])."\"";
-                $data1[]=str_replace([" ","\n","\r"],"",$data[$i]);
+        $num=count($data);
+        if($num<40){
+            $lent=$num;
+        }else{
+            $lent=40;
+        }
+        for($i=0;$i<$lent;$i++){
+            if(isset( $data[$i])){
+                $data[$i]=str_replace(["\n","\r"],"",$data[$i]);
+                if($data[$i]!=""&&substr_count($data[$i],"%")==0&&substr_count($data[$i],":")&&substr($data[$i], -1)!=":"&&substr_count($data[$i],"http")==0){
+                    $data[$i]="\"".str_replace([": ",":	"],"\":\"",$data[$i])."\"";
+                    $data1[]=str_replace([" ","\n","\r"],"",$data[$i]);
+                }
             }
+
         }
         $data2=implode(",",$data1);
         $data2="{".$data2."}";

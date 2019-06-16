@@ -391,7 +391,13 @@ class ApischeckModel {
         }
         $data1=[];
         $data=explode("\n",$out);
-        for($i=0;$i<40;$i++){
+         $num=count($data);
+        if($num<40){
+            $lent=$num;
+        }else{
+            $lent=40;
+        }
+        for($i=0;$i<$lent;$i++){
             $data[$i]=str_replace(["\n","\r"],"",$data[$i]);
             if($data[$i]!=""&&substr_count($data[$i],"%")==0&&substr_count($data[$i],":")&&substr($data[$i], -1)!=":"&&substr_count($data[$i],"http")==0){
                 $data[$i]="\"".str_replace([": ",":	"],"\":\"",$data[$i])."\"";
