@@ -36,7 +36,7 @@ class RediscacheModel {
             }elseif($domain_extent[1]=="nl"){
                 $redismodel->rPush("domains",$domain);
                 fwrite($nlfile,$domain."\n");
-            }elseif($domain_extent[1]=="fr"||$domain_extent[1]=="it"||$domain_extent[1]=="ch"||$domain_extent[1]=="cz"){
+            }elseif($domain_extent[1]=="fr"||$domain_extent[1]=="it"||$domain_extent[1]=="ch"||$domain_extent[1]=="cz"||$domain_extent[1]=="eu"){
                 $redismodel->rPush("fr_domains",$domain);
                 fwrite($frfile,$domain."\n");
             }

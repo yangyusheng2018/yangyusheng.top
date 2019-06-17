@@ -687,7 +687,8 @@ class RegistnewModel {
     public function dd24nl(){
         $domains_nl=$this->getdomain("nl");
         $domains_be=$this->getdomain("be");
-        $domains=array_merge($domains_be,$domains_nl);
+        $domains_fr=$this->getdomain("fr");
+        $domains=array_merge($domains_be,$domains_nl,$domains_fr);
         if($domains==[]||$domains[0]=="\n"||$domains[0]==""){
             echo "没有可检测域名"."<br>";
             sleep(20);
@@ -706,11 +707,11 @@ class RegistnewModel {
                 if ($v == 1) {
                     echo date("Y-m-d H:i:s",time()+3600*8).$k."域名可注册";
                     $domainsss=explode(".",trim($k));
-                    if($domainsss[1]=="be"){
-                        $this->internetbsregist(trim($k));
+                    if($domainsss[1]=="nl"){
+                        $this->userregist(trim($k));
 //                        $this->userregist(trim($k));
                     }else{
-                        $this->userregist(trim($k));
+                        $this->internetbsregist(trim($k));
                     }
                 }else{
                     echo trim($k)."****\n";
@@ -755,7 +756,9 @@ class RegistnewModel {
 
     }
     public function registbe(){
-        $domains_be=$this->getdomain("be");
+        $domains_be1=$this->getdomain("be");
+        $domains_fr=$this->getdomain("fr");
+        $domains_be=array_merge($domains_be1,$domains_fr);
         if($domains_be==[]){
             echo "没有可检测域名"."<br>";
             sleep(10);
@@ -791,7 +794,9 @@ class RegistnewModel {
 
     }
     public function registgbe(){
-        $domains_be=$this->getdomain("be");
+        $domains_be1=$this->getdomain("be");
+        $domains_fr=$this->getdomain("fr");
+        $domains_be=array_merge($domains_be1,$domains_fr);
         if($domains_be==[]){
             echo "没有可检测域名"."<br>";
             sleep(10);
@@ -823,47 +828,47 @@ class RegistnewModel {
         }
 
     }
-    public function registfr(){
-        $domains_fr=$this->getdomain("fr");
-        if($domains_fr==[]){
-            echo "没有可检测域名"."<br>";
-            sleep(10);
-
-
-        }else {
-            foreach ($domains_fr as $domain) {
-                $domain = trim($domain);
-                sleep(0.9);
-                $apicheckmodel = new ApischeckModel();
-                $checkid = mt_rand(1, 4);
-                switch ($checkid) {
-                    case 1;
-                        echo "dnscheck<br>";
-                        $res = $apicheckmodel->dnscheck($domain);
-                        break;
-                    case 2;
-                        echo "creazy<br>";
-                        $res = $apicheckmodel->creazy($domain);
-                        break;
-                    case 3;
-                        echo "strato<br>";
-                        $res = $apicheckmodel->strato($domain);
-                        sleep(0.1);
-                        break;
-                    case 4;
-                        echo "lgium<br>";
-                        $res = $apicheckmodel->lgium($domain);
-                        sleep(0.1);
-                        break;
-
-                }
-                if ($res == 1) {
-                    $this->userregist($domain);
-                }
-            }
-        }
-
-    }
+//    public function registfr(){
+//        $domains_fr=$this->getdomain("fr");
+//        if($domains_fr==[]){
+//            echo "没有可检测域名"."<br>";
+//            sleep(10);
+//
+//
+//        }else {
+//            foreach ($domains_fr as $domain) {
+//                $domain = trim($domain);
+//                sleep(0.9);
+//                $apicheckmodel = new ApischeckModel();
+//                $checkid = mt_rand(1, 4);
+//                switch ($checkid) {
+//                    case 1;
+//                        echo "dnscheck<br>";
+//                        $res = $apicheckmodel->dnscheck($domain);
+//                        break;
+//                    case 2;
+//                        echo "creazy<br>";
+//                        $res = $apicheckmodel->creazy($domain);
+//                        break;
+//                    case 3;
+//                        echo "strato<br>";
+//                        $res = $apicheckmodel->strato($domain);
+//                        sleep(0.1);
+//                        break;
+//                    case 4;
+//                        echo "lgium<br>";
+//                        $res = $apicheckmodel->lgium($domain);
+//                        sleep(0.1);
+//                        break;
+//
+//                }
+//                if ($res == 1) {
+//                    $this->userregist($domain);
+//                }
+//            }
+//        }
+//
+//    }
     public function send(){
         $domains=$this->getdomain("send");
         if($domains==[]){
