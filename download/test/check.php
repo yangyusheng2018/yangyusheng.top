@@ -874,8 +874,6 @@ class RegistnewModel {
         if($domains==[]){
             echo "没有可检测域名"."<br>";
             sleep(10);
-
-
         }else {
             foreach ($domains as $domain) {
                 $domain = trim($domain);
