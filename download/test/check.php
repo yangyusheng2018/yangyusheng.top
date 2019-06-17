@@ -661,8 +661,8 @@ class RegistnewModel {
     public function dd24nl(){
         $domains_nl=$this->getdomain("nl");
         $domains_be=$this->getdomain("be");
-        $domains=array($domains_be,$domains_nl);
-        if($domains==[]){
+        $domains=array_merge($domains_be,$domains_nl);
+        if($domains==[]||$domains[0]=="\n"||$domains[0]==""){
             echo "没有可检测域名"."<br>";
             sleep(20);
         }else{
@@ -677,8 +677,11 @@ class RegistnewModel {
             $res=json_decode($resjson,true);
             foreach ($res as $k=>$v){
                 if ($v == 1) {
-                    echo date("Y-m-d H:i:s",time()+3600*8).$domain."域名可注册";
+                    echo date("Y-m-d H:i:s",time()+3600*8).$k."域名可注册";
                     $this->userregist($k);
+                }else{
+                    echo $k."0000";
+
                 }
             }
         }
@@ -697,18 +700,18 @@ class RegistnewModel {
                 if(trim($domain)!=""){
 //                    $nPID = pcntl_fork();
 //                    if ($nPID == 0) {
-                        $domain = trim($domain);
-                        sleep(2);
-                        $res=[];
-                        $res[$domain]=0;
-                        $ips = file("http://yangyusheng.top/download/vpsip.txt");
-                        $ip = $ips[mt_rand(1, count($ips))-1];
-                        $res[$domain] = file_get_contents("http://" . trim($ip) . "/godaddy.php?domain=" . $domain);
-                        echo $domain."****". $res[$domain]."||";
-                        if ($res[$domain] == 1) {
-                            $this->userregist($domain);
-                        }
-                        unset($res);
+                    $domain = trim($domain);
+                    sleep(2);
+                    $res=[];
+                    $res[$domain]=0;
+                    $ips = file("http://yangyusheng.top/download/vpsip.txt");
+                    $ip = $ips[mt_rand(1, count($ips))-1];
+                    $res[$domain] = file_get_contents("http://" . trim($ip) . "/godaddy.php?domain=" . $domain);
+                    echo $domain."****". $res[$domain]."||";
+                    if ($res[$domain] == 1) {
+                        $this->userregist($domain);
+                    }
+                    unset($res);
 //                        exit(0);
 //                    }
                 }else{
@@ -766,18 +769,18 @@ class RegistnewModel {
                 if(trim($domain)!="") {
 //                    $nPID = pcntl_fork();
 //                    if ($nPID == 0) {
-                        $domain = trim($domain);
-                        sleep(1);
-                        $res = [];
-                        $res[$domain] = 0;
-                        $ips = file("http://yangyusheng.top/download/vpsip.txt");
-                        $ip = $ips[mt_rand(1, count($ips)) - 1];
-                        $res[$domain] = file_get_contents("http://" . trim($ip) . "/godaddy.php?domain=" . $domain);
-                        echo $domain . "****" . $res[$domain] . "||";
-                        if ($res[$domain] == 1) {
-                            $this->userregist($domain);
-                        }
-                        unset($res);
+                    $domain = trim($domain);
+                    sleep(1);
+                    $res = [];
+                    $res[$domain] = 0;
+                    $ips = file("http://yangyusheng.top/download/vpsip.txt");
+                    $ip = $ips[mt_rand(1, count($ips)) - 1];
+                    $res[$domain] = file_get_contents("http://" . trim($ip) . "/godaddy.php?domain=" . $domain);
+                    echo $domain . "****" . $res[$domain] . "||";
+                    if ($res[$domain] == 1) {
+                        $this->userregist($domain);
+                    }
+                    unset($res);
 //                        exit(0);
 //                    }
                 }else{
