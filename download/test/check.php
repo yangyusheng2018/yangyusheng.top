@@ -583,7 +583,7 @@ class RegistnewModel {
             $nowtime=time();
             $pdo=$this->getpdo();
             $pdo->query('set names utf8');
-            $query=$pdo->prepare("select *  from domains where start_time<? and end_time>? and is_send<3 AND Domain=?");
+            $query=$pdo->prepare("select *  from domains where start_time<? and end_time>? and is_send<4 AND Domain=?");
             $query->execute([$nowtime,$nowtime,$domain]);
             $ress=$query->fetchAll();
             $pdo=null;
@@ -616,11 +616,37 @@ class RegistnewModel {
 
             }else{echo "没有符合条件用户||";}
         }
+    }
 
+    public function internetbsregist($domain){
+        $arrt=explode(".",$domain);
+        $domains1=$this->getdomain($arrt[1]);
+//        if(!in_array($domain."\n", $domains1)){
+        if(0){
+            echo "此域名不存在||";
+        }else{
+            $nowtime=time();
+            $pdo=$this->getpdo();
+            $pdo->query('set names utf8');
+            $query=$pdo->prepare("select *  from domains where start_time<? and end_time>? and is_send<4 AND Domain=?");
+            $query->execute([$nowtime,$nowtime,$domain]);
+            $ress=$query->fetchAll();
+            $pdo=null;
+            if($ress!=[]){
+                $users=$ress[array_rand($ress,1)];
+                var_dump($users["user_id"]);
 
-
-
-
+                $res1= file_get_contents("https://api.internet.bs/Domain/Create?ApiKey=".$users["apikey1"]."&Password=".$users["password"]."&Domain=".$domain."&CloneContactsFromDomain=".$users["clonedomain"]);
+                var_dump($res1);
+                if(strpos($res1,"product_0_status=SUCCESS")){
+                    echo $messages="购买成功";
+                    $this->sendchenggong2($domain);
+                }else{
+                    echo $messages="api2域名购买失败||";
+                    $this->shibai($domain);
+                }
+            }else{echo "没有符合条件用户||";}
+        }
     }
     public function getdomain($extend){
         $domains=[];
@@ -666,22 +692,28 @@ class RegistnewModel {
             echo "没有可检测域名"."<br>";
             sleep(20);
         }else{
-            $domainstr="";
-            foreach ($domains as $domain){
-                $domainstr=trim($domain).",";
+            $domainstr=[];
+            foreach ($domains as $tt){
+                $domainstr[]=trim($tt);
             }
+            $domainstr1=implode(",",$domainstr);
             $ips = file("http://yangyusheng.top/download/vpsip.txt");
             $ip = $ips[mt_rand(0, count($ips))-1];
-            echo $ip;
-            $resjson= file_get_contents("http://" . trim($ip) . "/dd24.php?domain=" . $domainstr);
+            $url="http://".trim($ip)."/dd24.php?domains=".$domainstr1;
+            $resjson= file_get_contents($url);
             $res=json_decode($resjson,true);
             foreach ($res as $k=>$v){
                 if ($v == 1) {
                     echo date("Y-m-d H:i:s",time()+3600*8).$k."域名可注册";
-                    $this->userregist($k);
+                    $domainsss=explode(".",trim($k));
+                    if($domainsss[1]=="be"){
+                        $this->internetbsregist(trim($k));
+//                        $this->userregist(trim($k));
+                    }else{
+                        $this->userregist(trim($k));
+                    }
                 }else{
-                    echo $k."0000";
-
+                    echo trim($k)."****\n";
                 }
             }
         }
@@ -728,7 +760,6 @@ class RegistnewModel {
             echo "没有可检测域名"."<br>";
             sleep(10);
 
-
         }else {
             foreach ($domains_be as $domain) {
                 if(trim($domain)!=""){
@@ -746,7 +777,8 @@ class RegistnewModel {
                         if ($res[$domain] == 1) {
                             echo date("Y-m-d H:i:s",time()+3600*8).$domain."域名可注册";
 //                        echo $domain."****". $res[$domain]."||";
-                            $this->userregist($domain);
+                            $this->internetbsregist($domain);
+//                            $this->userregist($domain);
                         }
                         unset($res);
                     }
@@ -767,8 +799,8 @@ class RegistnewModel {
         }else {
             foreach ($domains_be as $domain) {
                 if(trim($domain)!="") {
-//                    $nPID = pcntl_fork();
-//                    if ($nPID == 0) {
+                    $nPID = pcntl_fork();
+                    if ($nPID == 0) {
                     $domain = trim($domain);
                     sleep(1);
                     $res = [];
@@ -778,11 +810,12 @@ class RegistnewModel {
                     $res[$domain] = file_get_contents("http://" . trim($ip) . "/godaddy.php?domain=" . $domain);
                     echo $domain . "****" . $res[$domain] . "||";
                     if ($res[$domain] == 1) {
-                        $this->userregist($domain);
+                        $this->internetbsregist($domain);
+//                        $this->userregist($domain);
                     }
                     unset($res);
-//                        exit(0);
-//                    }
+                        exit(0);
+                    }
                 }else{
                     echo "域名不能为空||";
                 }
@@ -869,7 +902,6 @@ class RegistnewModel {
                     }else{
                         echo 1;
                     }
-
 
 
                 }
