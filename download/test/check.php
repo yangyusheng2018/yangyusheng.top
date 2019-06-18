@@ -628,7 +628,7 @@ class RegistnewModel {
             $nowtime=time();
             $pdo=$this->getpdo();
             $pdo->query('set names utf8');
-            $query=$pdo->prepare("select *  from domains where start_time<? and end_time>? and is_send<4 AND Domain=?");
+            $query=$pdo->prepare("select *  from domains where start_time<? and end_time>? and is_send<5 AND Domain=?");
             $query->execute([$nowtime,$nowtime,$domain]);
             $ress=$query->fetchAll();
             $pdo=null;
@@ -731,8 +731,8 @@ class RegistnewModel {
         }else{
             foreach ($domains_nl as $domain){
                 if(trim($domain)!=""){
-//                    $nPID = pcntl_fork();
-//                    if ($nPID == 0) {
+                    $nPID = pcntl_fork();
+                    if ($nPID == 0) {
                     $domain = trim($domain);
                     sleep(2);
                     $res=[];
@@ -745,8 +745,8 @@ class RegistnewModel {
                         $this->userregist($domain);
                     }
                     unset($res);
-//                        exit(0);
-//                    }
+                        exit(0);
+                    }
                 }else{
                     echo "域名不能为空||";
                 }

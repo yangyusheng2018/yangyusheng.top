@@ -19,7 +19,6 @@ $post_data =[
 'extension_id'=>$extent_id,
 'domain'=> $domain,
 'year'=>"1",
-"holder_id"=>$holder_id,
 ];
 curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($post_data));
 
