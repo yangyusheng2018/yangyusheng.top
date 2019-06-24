@@ -5,7 +5,7 @@ do{
     $registmodel=new RegistnewModel();
 //$registmodel->registnl();
     $registmodel->registgbe();
-    sleep(1);
+    sleep(2);
     $time2=time();
     $tim3=$time2-$time1;
 }while($tim3<59);

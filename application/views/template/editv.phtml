@@ -43,6 +43,18 @@
                 </div>
             </div>
             <div class="row cl">
+                <label class="form-label col-xs-2">versio 账号:密码</label>
+                <div class="formControls col-xs-8">
+                    <input id="versio_userpwd" name="versio_userpwd" type="text" placeholder="versio_userpwd" class="input-text size-L"  value="<?=$res["versio_userpwd"]?>">
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-2">versio 联系人id</label>
+                <div class="formControls col-xs-8">
+                    <input id="versio_contentid" name="versio_contentid" type="text" placeholder="versio_contentid" class="input-text size-L"  value="<?=$res["versio_contentid"]?>">
+                </div>
+            </div>
+            <div class="row cl">
                 <label class="form-label col-xs-2">extent_id</label>
                 <div class="formControls col-xs-8">
                     <input id="extent_id" name="extent_id" type="text" placeholder="extent_id" class="input-text size-L" value="<?=$res["extent_id"]?>">
@@ -101,6 +113,8 @@
                     holderid:$("#holderid").val(),
                     clonedomain:$("#clonedomain").val(),
                     email:$("#email").val(),
+                    versio_contentid:$("#versio_contentid").val(),
+                    versio_userpwd:$("#versio_userpwd").val(),
                 },
                 dataType:'json',
                 success:function(msg){

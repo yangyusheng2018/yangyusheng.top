@@ -64,6 +64,19 @@
                 </div>
             </div>
             <div class="row cl">
+                <label class="form-label col-xs-2">versio 账号:密码</label>
+                <div class="formControls col-xs-8">
+                    <input id="versio_userpwd" name="versio_userpwd" type="text" value="<?=$res["versio_userpwd"]?>" class="input-text size-L">
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-2">versio 联系人id</label>
+                <div class="formControls col-xs-8">
+                    <input id="versio_contentid" name="versio_contentid" type="text" value="<?=$res["versio_contentid"]?>" class="input-text size-L">
+                </div>
+            </div>
+
+            <div class="row cl">
                 <label class="form-label col-xs-2">扩展名id（nl为4；be为10）</label>
                 <div class="formControls col-xs-8">
                     <input id="extent_id" name="extent_id" type="text" value="<?=$res["extent_id"]?>" class="input-text size-L">
@@ -141,6 +154,8 @@
                     extent_id:$("#extent_id").val(),
                     clonedomain:$("#clonedomain").val(),
                     email:$("#email").val(),
+                    versio_contentid:$("#versio_contentid").val(),
+                    versio_userpwd:$("#versio_userpwd").val(),
                     <?php
                     if($model==2){
                         echo 'is_send:11,';
