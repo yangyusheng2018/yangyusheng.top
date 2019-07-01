@@ -11,10 +11,12 @@ class UserModel {
         $db_ms='mysql';  //数据库类型
         $db_host='localhost';  //主机地址
         $db_user='root';  //数据库账号
-        $yangconfig=file($_SERVER['DOCUMENT_ROOT']."/download/paw.txt");
-        $paw=trim($yangconfig[0]);
-        $db_pass=$paw;  //数据库密码
-        $this->db_pass=$paw;
+        $redismodel=new Redis();
+        $redismodel->connect("127.0.0.1","6379");
+        $redismodel->auth("yangyusheng1234");
+        $datapws= $redismodel->get('mysqlpwd');
+        $redismodel->close();
+        $db_pass=$datapws;  //数据库密码
         $db_name='user'; //数据库名
         $dbh=$db_ms.':host='.$db_host.';'.'dbname='.$db_name;
         $this->pdo=new PDO($dbh,$db_user,$db_pass);
