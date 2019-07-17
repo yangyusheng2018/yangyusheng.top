@@ -1,0 +1,2 @@
+<?php
+echo file_get_contents("http://web.archive.org/__wb/sparkline?url=http%3A%2F%2F".trim($_GET["domain"])."&collection=web&output=json");

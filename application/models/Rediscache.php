@@ -20,6 +20,7 @@ class RediscacheModel {
         $redismodel->delete("nl_domains");
         $redismodel->delete("be_domains");
         $redismodel->delete("fr_domains");
+        $redismodel->delete("ch_domains");
         $redismodel->delete("send_domains");
         var_dump($domains);
         foreach ($domains as $domain){
@@ -28,8 +29,16 @@ class RediscacheModel {
                 $redismodel->rPush("be_domains",$domain);
             }elseif($domain_extent[1]=="nl"){
                 $redismodel->rPush("nl_domains",$domain);
-            }elseif($domain_extent[1]=="fr"||$domain_extent[1]=="it"||$domain_extent[1]=="ch"||$domain_extent[1]=="cz"||$domain_extent[1]=="eu"){
+            }elseif($domain_extent[1]=="fr"||$domain_extent[1]=="it"||$domain_extent[1]=="cz"||$domain_extent[1]=="eu"){
                 $redismodel->rPush("fr_domains",$domain);
+            }elseif($domain_extent[1]=="ch"){
+                $domainsmodel1=new DomainsModel();
+                $ress=$domainsmodel1->getUserByDomain($domain);
+                foreach ($ress as $users){
+                    $redismodel->rPush("ch_domains",$domain."----".$users["apikey1"]."----".$users["password"]."----".$users["clonedomain"]);
+                }
+
+
             }
         }
         foreach ($senddomains as $domain){
@@ -38,9 +47,6 @@ class RediscacheModel {
         $fen=date("i",time());
         if($fen>15&&$fen<43){
             $redismodel->delete("be_domains");
-            $befile=fopen($_SERVER['DOCUMENT_ROOT']."/download/be.txt","w");
-            fwrite($befile,"");
-            fclose($befile);
         }
         $redismodel->close();
     }

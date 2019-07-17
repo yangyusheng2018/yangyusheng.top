@@ -184,4 +184,10 @@ class DomainsModel {
             $this->delete($v);
         }
     }
+    public function getUserByDomain($domain){
+        $query=$this->pdo->prepare("select * from domains where domain=?");
+        $query->execute([$domain]);
+        $res=$query->fetchAll();
+        return $res;
+    }
 }

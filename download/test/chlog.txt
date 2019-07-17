@@ -1,0 +1,31 @@
+transactid=2e5f36986c2dc7a19103dedd8cd9a69d
+product_0_status=FAILURE
+product_0_message=Domain "oergelires.ch" is not available for registration
+product_0_code=100017transactid=391afd38911ec0963be3514c7633c5ed
+product_0_status=FAILURE
+product_0_message=Failed to provide "oergelires.ch"!
+product_0_code=100025transactid=e636059be3b4b619c458a706da77bc12
+product_0_status=FAILURE
+product_0_message=Failed to provide "oergelires.ch"!
+product_0_code=100025transactid=d94f9539962b1ddc48f68b1caeefa3ed
+product_0_status=FAILURE
+product_0_message=Failed to provide "oergelires.ch"!
+product_0_code=100025transactid=d6a1f82c93c6889c04694ef8d5c1ba33
+product_0_status=FAILURE
+product_0_message=Failed to provide "oergelires.ch"!
+product_0_code=100025transactid=500ecf46ce42e14be613fde54beed182
+product_0_status=FAILURE
+product_0_message=Failed to provide "oergelires.ch"!
+product_0_code=100025transactid=1c712436e03a5cfa6ad989401201ad02
+product_0_status=FAILURE
+product_0_message=Failed to provide "oergelires.ch"!
+product_0_code=100025transactid=f31a092fb730a4171fd9bb94064c2358
+product_0_status=FAILURE
+product_0_message=Failed to provide "oergelires.ch"!
+product_0_code=100025transactid=c6da1c4e772eb87283717f60cd521d6a
+product_0_status=FAILURE
+product_0_message=Failed to provide "oergelires.ch"!
+product_0_code=100025transactid=5dc15553dbd308e653952a46078b29fd
+product_0_status=FAILURE
+product_0_message=Failed to provide "oergelires.ch"!
+product_0_code=100025没有域名
