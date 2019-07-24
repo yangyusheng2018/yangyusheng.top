@@ -139,6 +139,7 @@ class RegistnewModel {
         $arrt=explode(".",$domain);
         $domains1=$this->getdomain("fr");
         $domains2=$this->getdomain("be");
+
         $domains3=array_merge($domains1,$domains2);
         if(!in_array($domain, $domains3)){
             echo "此域名不存在||";
@@ -147,18 +148,27 @@ class RegistnewModel {
             if($ress!=[]){
                 $users=$ress[array_rand($ress,1)];
                 var_dump($users["user_id"]);
-
-                $res1= file_get_contents("https://api.internet.bs/Domain/Create?ApiKey=".$users["apikey1"]."&Password=".$users["password"]."&Domain=".$domain."&CloneContactsFromDomain=".$users["clonedomain"]);
-                var_dump($res1);
-                if(strpos($res1,"product_0_status=SUCCESS")){
-                    echo $messages=$domain."在internetbs购买成功";
-                    $this->sendchenggong2($domain);
-                    file_get_contents("http://47.101.150.74/QQstmp.php?title=".$domain."&content=".$messages."&to=".$users["email"]);
+                if($users["versio_userpwd"]!=1&&$users["versio_contentid"]!=1){
+                    $res1= file_get_contents("https://api.internet.bs/Domain/Create?ApiKey=".$users["apikey1"]."&Password=".$users["password"]."&Domain=".$domain."&CloneContactsFromDomain=".$users["clonedomain"]);
+                    var_dump($res1);
+                    if(strpos($res1,"product_0_status=SUCCESS")){
+                        echo $messages=$domain."在internetbs购买成功";
+                        $this->sendchenggong2($domain);
+                        file_get_contents("http://47.101.150.74/QQstmp.php?title=".$domain."&content=".$messages."&to=".$users["email"]);
+                    }else{
+                        if($arrt[1]=="nl"||$arrt[1]=="be"){
+                            echo $messages="internetbsregist域名购买失败||";
+                            $this->neostrada($users["apikey"],$domain,$users["extent_id"],$users["holderid"]);
+                        }
+                    }
                 }else{
-
-                    echo $messages="internetbsregist域名购买失败||";
-                    $this->neostrada($users["apikey"],$domain,$users["extent_id"],$users["holderid"]);
+                    if($arrt[1]=="nl"||$arrt[1]=="be"){
+                        echo $messages="选择neo购买||";
+                        $this->neostrada($users["apikey"],$domain,$users["extent_id"],$users["holderid"]);
+                    }
                 }
+
+
             }else{echo "没有符合条件用户||";}
         }
     }
@@ -208,7 +218,10 @@ class RegistnewModel {
                         file_get_contents("http://47.101.150.74/QQstmp.php?title=".$domain."&content=".$messages."&to=".$users["email"]);
                     }elseif($res1["error"]["message"]=="InsufficientFundsException"){
                         echo $messages="余额不足";
-                        $this->neostrada($users["apikey"],$domain,$users["extent_id"],$users["holderid"]);
+                        if($arrt[1]=="nl"||$arrt[1]=="be"){
+                            $this->neostrada($users["apikey"],$domain,$users["extent_id"],$users["holderid"]);
+                        }
+
                     }
                 }
 

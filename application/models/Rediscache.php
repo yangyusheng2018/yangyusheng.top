@@ -29,7 +29,7 @@ class RediscacheModel {
                 $redismodel->rPush("be_domains",$domain);
             }elseif($domain_extent[1]=="nl"){
                 $redismodel->rPush("nl_domains",$domain);
-            }elseif($domain_extent[1]=="fr"||$domain_extent[1]=="it"||$domain_extent[1]=="cz"||$domain_extent[1]=="eu"){
+            }elseif($domain_extent[1]=="fr"||$domain_extent[1]=="it"||$domain_extent[1]=="cz"||$domain_extent[1]=="eu"||$domain_extent[1]=="ch"){
                 $redismodel->rPush("fr_domains",$domain);
             }elseif($domain_extent[1]=="ch"){
                 $domainsmodel1=new DomainsModel();
